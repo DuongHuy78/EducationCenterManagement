@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using QuanLyTrungTamDaoTao.Data;
+using QuanLyTrungTamDaoTao.Helper;
 namespace QuanLyTrungTamDaoTao
 {
     public class Program
@@ -22,6 +23,8 @@ namespace QuanLyTrungTamDaoTao
             //        options.ClientId = "";
             //        options.ClientSecret = "";
             //    });
+
+            builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
 
             var app = builder.Build();
 
