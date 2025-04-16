@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using QuanLyTrungTamDaoTao.Data;
 using QuanLyTrungTamDaoTao.Helper;
+using Microsoft.AspNetCore.Authentication.Cookies;
 namespace QuanLyTrungTamDaoTao
 {
     public class Program
@@ -14,6 +15,14 @@ namespace QuanLyTrungTamDaoTao
 
             builder.Services.AddDbContext<QuanLyTrungTamDaoTaoContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DataBase")));
+
+            builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie (
+                options =>
+                {
+                    options.LoginPath = "/Account/DangNhap";
+                    options.LogoutPath = "/Account/DangXuat";
+                    options.AccessDeniedPath = "/AccessDenied";
+                });
 
 
 
@@ -38,6 +47,8 @@ namespace QuanLyTrungTamDaoTao
 
             app.UseHttpsRedirection();
             app.UseRouting();
+            
+            app.UseAuthentication();
 
             app.UseAuthorization();
 

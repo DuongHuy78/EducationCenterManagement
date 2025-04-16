@@ -1,4 +1,4 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using QuanLyTrungTamDaoTao.Models;
 
@@ -15,7 +15,15 @@ namespace QuanLyTrungTamDaoTao.Controllers
 
         public IActionResult Index()
         {
-            return View();
+            if (User.Identity.IsAuthenticated)
+            {
+                Console.WriteLine(User.Identity.Name);
+            }
+            else
+            {
+
+            }
+                return View();
         }
 
         public IActionResult Privacy()

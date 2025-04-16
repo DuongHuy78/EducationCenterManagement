@@ -1,65 +1,32 @@
-﻿@model QuanLyTrungTamDaoTao.ViewModels.RegisterVM
+﻿@model QuanLyTrungTamDaoTao.ViewModels.LoginVM
 
 @{
-    ViewData["Title"] = "DangKy";
+    ViewData["Title"] = "DangNhap";
 }
 
-<form class="form" asp-controller="Register" asp-action="DangKy" method="post">
-    <div class="flex-column">
-        <label>Email </label>
-    </div>
-    <div class="inputForm">
-        <input type="text" asp-for="Email" class="input" placeholder="Enter your Email">
-    </div>
-    <div class="flex-column">
-        <label>Họ Tên </label>
-    </div>
-    <div class="inputForm">
-        <input type="text" asp-for="HoTen" class="input" placeholder="Enter your Full Name">
-    </div>
-
-    <div class="flex-column">
-        <label>Ngày Sinh </label>
-    </div>
-    <div class="inputForm">
-        <input type="date" asp-for="NgaySinh" class="input">
-    </div>
-
-    <div class="flex-column">
-        <label>Số Điện Thoại </label>
-    </div>
-    <div class="inputForm">
-        <input type="tel" asp-for="SoDienThoai" class="input" placeholder="Enter your Phone Number">
-    </div>
-
+<form class="form" asp-controller="Account" asp-action="DangNhap" method="post">
+    <div asp-validation-summary="All" class="text-danger"></div> <!-- Add this line to display all validation errors -->
     <div class="flex-column">
         <label>Tài Khoản (Username) </label>
     </div>
     <div class="inputForm">
-        <input type="text" asp-for="TaiKhoan" class="input" placeholder="Enter your Username">
+        <input type="text" asp-for="userName" class="input" placeholder="Enter your Username">
     </div>
 
     <div class="flex-column">
         <label>Password </label>
     </div>
     <div class="inputForm">
-        <input type="password" asp-for="MatKhau" class="input" placeholder="Enter your Password">
+        <input type="password" asp-for="password" class="input" placeholder="Enter your Password">
     </div>
 
-    <div class="flex-row">
-        <div>
-            <input type="checkbox">
-            <label>Remember me </label>
-        </div>
-        <span class="span">Forgot password?</span>
-    </div>
     <button type="submit" class="button-submit">Sign Up</button>
     <p class="p">
         Have an account? <span class="span">Sign in</span>
     </p>
     <p class="p line">Or With</p>
     <div class="flex-row">
-        <button type="button" class="btn google">  
+        <button type="button" class="btn google">
             <!-- Google SVG -->
             Google
         </button>
@@ -196,9 +163,8 @@
         transition: 0.2s ease-in-out;
     }
 
-    .btn:hover {
-        border: 1px solid #2d79f3;
-          
-    }
+        .btn:hover {
+            border: 1px solid #2d79f3;
+        }
 </style>
 
