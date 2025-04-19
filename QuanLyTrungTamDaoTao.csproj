@@ -4,6 +4,7 @@
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>8861bac6-96b3-4b13-aca7-b08fd587942a</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -20,7 +21,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Data\" />
+    <Folder Include="Areas\Admin\Data\" />
+    <Folder Include="Areas\Admin\Models\" />
+    <Folder Include="Models\" />
   </ItemGroup>
 
 </Project>

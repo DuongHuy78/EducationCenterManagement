@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using QuanLyTrungTamDaoTao.Models;
 
 namespace QuanLyTrungTamDaoTao.Controllers
@@ -7,10 +8,12 @@ namespace QuanLyTrungTamDaoTao.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly QuanLyTrungTamDaoTaoContext _db;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, QuanLyTrungTamDaoTaoContext context)
         {
             _logger = logger;
+            _db = context;   
         }
 
         public IActionResult Index()
@@ -26,15 +29,15 @@ namespace QuanLyTrungTamDaoTao.Controllers
                 return View();
         }
 
-        public IActionResult Privacy()
-        {
-            return View();
-        }
+        #region  Hiển thị khóa học
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
+        public async Task<IActionResult> HienThiKhoaHoc()
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            var ngayHienTai = DateOnly.FromDateTime(DateTime.Now);
+            var danhSachKhoaHoc = await _db.KhoaHocs.Where(kh => kh.ThoiGianKhaiGiang > ngayHienTai)
+                                                    .ToListAsync();
+            return View(danhSachKhoaHoc);
         }
+        #endregion
     }
 }

@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using QuanLyTrungTamDaoTao.Data; // Added for HocVien
+using QuanLyTrungTamDaoTao.Models;
 using QuanLyTrungTamDaoTao.ViewModels;
 
 namespace QuanLyTrungTamDaoTao.Helper

@@ -1,5 +1,5 @@
 ﻿using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.Blazor;
-using QuanLyTrungTamDaoTao.Data;
+using QuanLyTrungTamDaoTao.Models;
 using System.Security.Cryptography;
 using System.Runtime.Intrinsics.Arm;
 using System.Text;

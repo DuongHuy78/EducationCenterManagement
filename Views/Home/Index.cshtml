@@ -2,7 +2,80 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <h2>Bạn chưa đăng k</h2>
+        
+<div class="wrapping">
+    <div class="table-responsive">
+		<h2 class="text-center">Danh sách khóa học</h2>
+        <table class="table table-bordered table-hover event-table shadow-sm">
+            <thead class="table-dark">
+                <tr>
+                    <th>Tên khóa học</th>
+                    <th>Giảng viên</th>
+                    <th>Thời gian khai giảng</th>
+                    <th>Học phí</th>
+                    <th>Số lượng sinh viên tối đa</th>
+                </tr>
+            </thead>
+            @if (Model == null)
+            {
+                <p>Không có khóa học nào.</p>
+            }
+            else
+            {
+                <tbody>
+
+                    @foreach (var khoaHoc in Model)
+                    {
+                        <tr>
+                            <td>@khoaHoc.MaKhoaHoc</td>
+                            <td>@khoaHoc.TenKhoaHoc</td>
+                            <td>@khoaHoc.GiangVien</td>
+                            <td>@khoaHoc.ThoiGianKhaiGiang</td>
+                            <td>@khoaHoc.HocPhi</td>
+                            <td>@khoaHoc.SoLuongHocVienToiDa</td>
+                        </tr>
+                    }
+                </tbody>
+            }
+        </table>
+    </div>
+
+    @if (User.Identity.IsAuthenticated)
+    {
+        <div class="table-responsive">
+            <h2 class="text-center">Danh sách khóa học bạn đã chọn</h2>
+            <table class="table table-bordered table-hover event-table shadow-sm">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Tên khóa học</th>
+                        <th>Giảng viên</th>
+                        <th>Thời gian khai giảng</th>
+                        <th>Học phí</th>
+                        <th>Số lượng sinh viên tối đa</th>
+                    </tr>
+                </thead>
+                @if (Model == null)
+                {
+                    <p>Không có khóa học nào.</p>
+                }
+                else
+                {
+                    <tbody>
+
+                        @foreach (var khoaHoc in Model)
+                        {
+                            <tr>
+                                <td>@khoaHoc.MaKhoaHoc</td>
+                                <td>@khoaHoc.TenKhoaHoc</td>
+                                <td>@khoaHoc.GiangVien</td>
+                                <td>@khoaHoc.ThoiGianKhaiGiang</td>
+                                <td>@khoaHoc.HocPhi</td>
+                                <td>@khoaHoc.SoLuongHocVienToiDa</td>
+                            </tr>
+                        }
+                    </tbody>
+                }
+            </table>
+        </div>
+    }
 </div>

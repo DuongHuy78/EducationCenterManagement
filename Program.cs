@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
-using QuanLyTrungTamDaoTao.Data;
 using QuanLyTrungTamDaoTao.Helper;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using QuanLyTrungTamDaoTao.Models;
 namespace QuanLyTrungTamDaoTao
 {
     public class Program
@@ -22,7 +22,16 @@ namespace QuanLyTrungTamDaoTao
                     options.LoginPath = "/Account/DangNhap";
                     options.LogoutPath = "/Account/DangXuat";
                     options.AccessDeniedPath = "/AccessDenied";
+                })
+                .AddCookie("Admin", options =>
+                {
+                    options.LoginPath = "/Account/Login";
+                    options.LogoutPath = "/Admin/HomeAdmin/Logout";
+                    options.AccessDeniedPath = "/Account/AccessDenied";
+                    options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
+                    options.SlidingExpiration = true;
                 });
+
 
 
 
@@ -53,6 +62,11 @@ namespace QuanLyTrungTamDaoTao
             app.UseAuthorization();
 
             app.MapStaticAssets();
+
+            app.MapControllerRoute(
+                name: "Admin",
+                pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
+
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}")

@@ -1,14 +1,13 @@
-﻿﻿using AutoMapper; // Add AutoMapper
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore; // Add EF Core for async operations
-using QuanLyTrungTamDaoTao.Data;
 using QuanLyTrungTamDaoTao.ViewModels;
 using QuanLyTrungTamDaoTao.Helper;
 using System.Linq; // Add Linq
 using System.Threading.Tasks;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies; // Add Task for async
+using Microsoft.AspNetCore.Authentication.Cookies;
+using QuanLyTrungTamDaoTao.Models; // Add Task for async
 
 namespace QuanLyTrungTamDaoTao.Controllers
 {
@@ -48,70 +47,71 @@ namespace QuanLyTrungTamDaoTao.Controllers
                        return View(model);
                    }
 
-                    //var LastHV = await db.HocViens
-                    //                    .OrderByDescending(HV => HV.MaHocVien)
-                    //                    .FirstOrDefaultAsync();
-                    //string newMaHV;
-                    //if (LastHV == null)
-                    //{
-                    //    newMaHV = "HV0001";
-                    //}
-                    //else
-                    //{
-                    //    int temp = int.Parse(LastHV.MaHocVien.Substring(2));
-                    //    temp++;
-                    //    newMaHV = "HV" + temp.ToString("D4");
-                    //}
-
-                    //var newHV = new HocVien();
-                    //newHV.MaHocVien = newMaHV;
-                    //newHV.HoTen = model.HoTen;
-                    //newHV.NgaySinh = model.NgaySinh;
-                    //newHV.Email = model.Email;
-                    //newHV.SoDienThoai = model.SoDienThoai;
-
-                    //db.HocViens.Add(newHV);
-                    //await db.SaveChangesAsync();
-
-                    //var newTK = new TaiKhoan();
-                    //newTK.TenTaiKhoan = model.TaiKhoan;
-                    //newTK.MatKhau = Utils.hashPassword(model.MatKhau);
-                    //newTK.MaNguoiDung = newMaHV;
-                    //newTK.VaiTro = "HV";
-                    //db.TaiKhoans.Add(newTK);
-                    //await db.SaveChangesAsync();
-
-                    var LastQTV = await db.QuanTriViens
-                     .OrderByDescending(HV => HV.MaQuanTriVien)
-                     .FirstOrDefaultAsync();
+                    var LastHV = await db.HocViens
+                                        .OrderByDescending(HV => HV.MaHocVien)
+                                        .FirstOrDefaultAsync();
                     string newMaHV;
-                    if (LastQTV == null)
+                    if (LastHV == null)
                     {
-                        newMaHV = "QTV0001";
+                        newMaHV = "HV0001";
                     }
                     else
                     {
-                        int temp = int.Parse(LastQTV.MaQuanTriVien.Substring(2));
+                        int temp = int.Parse(LastHV.MaHocVien.Substring(2));
                         temp++;
-                        newMaHV = "QTV" + temp.ToString("D4");
+                        newMaHV = "HV" + temp.ToString("D4");
                     }
 
-                    var newQTV = new QuanTriVien();
-                    newQTV.MaQuanTriVien = newMaHV;
-                    newQTV.TenQuanTriVien = model.HoTen;
-                    newQTV.SoDienThoai = model.SoDienThoai;
-                    newQTV.Email = model.Email;
+                    var newHV = new HocVien();
+                    newHV.MaHocVien = newMaHV;
+                    newHV.HoTen = model.HoTen;
+                    newHV.NgaySinh = model.NgaySinh;
+                    newHV.Email = model.Email;
+                    newHV.SoDienThoai = model.SoDienThoai;
 
-                    db.QuanTriViens.Add(newQTV);
+                    db.HocViens.Add(newHV);
                     await db.SaveChangesAsync();
 
                     var newTK = new TaiKhoan();
                     newTK.TenTaiKhoan = model.TaiKhoan;
                     newTK.MatKhau = Utils.hashPassword(model.MatKhau);
                     newTK.MaNguoiDung = newMaHV;
-                    newTK.VaiTro = "QTV";
+                    newTK.VaiTro = "HV";
                     db.TaiKhoans.Add(newTK);
                     await db.SaveChangesAsync();
+
+                    //-------------------------đăng ký cho quản trị viên-----------------------------------------
+                    //var LastQTV = await db.QuanTriViens
+                    // .OrderByDescending(HV => HV.MaQuanTriVien)
+                    // .FirstOrDefaultAsync();
+                    //string newMaHV;
+                    //if (LastQTV == null)
+                    //{
+                    //    newMaHV = "QTV0001";
+                    //}
+                    //else
+                    //{
+                    //    int temp = int.Parse(LastQTV.MaQuanTriVien.Substring(2));
+                    //    temp++;
+                    //    newMaHV = "QTV" + temp.ToString("D4");
+                    //}
+
+                    //var newQTV = new QuanTriVien();
+                    //newQTV.MaQuanTriVien = newMaHV;
+                    //newQTV.TenQuanTriVien = model.HoTen;
+                    //newQTV.SoDienThoai = model.SoDienThoai;
+                    //newQTV.Email = model.Email;
+
+                    //db.QuanTriViens.Add(newQTV);
+                    //await db.SaveChangesAsync();
+
+                    //var newTK = new TaiKhoan();
+                    //newTK.TenTaiKhoan = model.TaiKhoan;
+                    //newTK.MatKhau = Utils.hashPassword(model.MatKhau);
+                    //newTK.MaNguoiDung = newMaHV;
+                    //newTK.VaiTro = "QTV";
+                    //db.TaiKhoans.Add(newTK);
+                    //await db.SaveChangesAsync();
 
                     return RedirectToAction("Index", "Home");
                 }
@@ -160,17 +160,17 @@ namespace QuanLyTrungTamDaoTao.Controllers
                 }
                 else
                 {
-                    if(user.VaiTro == "HV")
+                    Console.WriteLine(user.VaiTro);
+                    List<Claim> claims = new List<Claim>();
+                    if (user.VaiTro == "HV")
                     {
-                        var HocVien = db.HocViens.SingleOrDefault(hv => hv.MaHocVien == user.MaNguoiDung);
-                        Console.WriteLine(HocVien.HoTen);
-                        var claims = new List<Claim>
-                        {
-                            new Claim(ClaimTypes.Name, HocVien.HoTen),
-                            new Claim(ClaimTypes.Email, HocVien.Email),
-                            new Claim("MaHocVien", HocVien.HoTen),
-                            new Claim(ClaimTypes.Role, "HV")
-                        };
+                        var hocVien = db.HocViens.SingleOrDefault(hv => hv.MaHocVien == user.MaNguoiDung);
+                        Console.WriteLine(hocVien.HoTen);
+
+                        claims.Add(new Claim(ClaimTypes.Name, hocVien.HoTen));
+                        claims.Add(new Claim(ClaimTypes.Email, hocVien.Email));
+                        claims.Add(new Claim("MaHocVien", hocVien.MaHocVien));
+                        claims.Add(new Claim(ClaimTypes.Role, "HV"));
 
                         var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
                         var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
@@ -188,15 +188,13 @@ namespace QuanLyTrungTamDaoTao.Controllers
                     }
                     else if(user.VaiTro == "QTV")
                     {
-                        var QTV = db.QuanTriViens.SingleOrDefault(QTV => QTV.MaQuanTriVien == user.MaNguoiDung);
-                        Console.WriteLine(QTV.TenQuanTriVien);
-                        var claims = new List<Claim>
-                        {
-                            new Claim(ClaimTypes.Name, QTV.TenQuanTriVien),
-                            new Claim(ClaimTypes.Email, QTV.Email),
-                            new Claim("MaQuanTriVien", QTV.MaQuanTriVien),
-                            new Claim(ClaimTypes.Role, "QTV")
-                        };
+                        Console.WriteLine(user.TenTaiKhoan);
+                        var qtv = db.QuanTriViens.SingleOrDefault(QTV => QTV.MaQuanTriVien == user.MaNguoiDung);
+                        Console.WriteLine(qtv.TenQuanTriVien);
+                        claims.Add(new Claim(ClaimTypes.Name, qtv.TenQuanTriVien));
+                        claims.Add(new Claim(ClaimTypes.Email, qtv.Email));
+                        claims.Add(new Claim("MaQuanTriVien", qtv.MaQuanTriVien));
+                        claims.Add(new Claim(ClaimTypes.Role, "QTV"));
 
                         var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
                         var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
@@ -211,6 +209,12 @@ namespace QuanLyTrungTamDaoTao.Controllers
                             Console.WriteLine("Lỗi SignInAsync: " + ex.Message);
                             return View(model);
                         }
+
+                        return Redirect(Url.Action("Dashboard", "HomeAdmin", new { area = "Admin" }));
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("loi", "Vai trò không phù hợp");
                     }
                 }
             }
@@ -226,6 +230,7 @@ namespace QuanLyTrungTamDaoTao.Controllers
             return RedirectToAction("Index", "Home");
         }
         #endregion
+
     }
 
 }
