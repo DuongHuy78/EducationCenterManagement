@@ -1,0 +1,128 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+    var danhSachKhoaHocDaDangKy = ViewBag.DanhSachKhoaHocDaDangKy as List<QuanLyTrungTamDaoTao.Models.KhoaHoc>;
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger" role="alert">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success" role="alert">
+        @TempData["SuccessMessage"]
+    </div>
+}
+<div class="wrapping">
+    @if (User.Identity!.IsAuthenticated)
+    {
+        <div class="table-responsive">
+            <h2 class="text-center">Danh sách khóa học bạn đang học</h2>
+            <table class="table table-bordered table-hover event-table shadow-sm">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Mã</th>
+                        <th>Tên khóa học</th>
+                        <th>Giảng viên</th>
+                        <th>Thời gian giảng dạy</th>
+                        <th>Học phí</th>
+                        <th>Số lượng sinh viên</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+                @if (ViewBag.DanhSachKhoaHocDaDangKy != null && ViewBag.DanhSachKhoaHocDaDangKy.Count > 0)
+                {
+                    int Count = 0;
+                    <tbody>
+                        @foreach (var khoaHoc in danhSachKhoaHocDaDangKy!)
+                        {
+                            if (khoaHoc.ThoiGianKetThuc == null || khoaHoc.ThoiGianKetThuc > DateOnly.FromDateTime(DateTime.Now))
+                            {
+                                Count++;
+                                var thoiGianKetThucDaDangKy = khoaHoc.ThoiGianKetThuc?.ToString("dd-MM-yyyy") ?? "Chưa xác định";
+                                <tr>
+                                    <td>@khoaHoc.MaKhoaHoc</td>
+                                    <td>@khoaHoc.TenKhoaHoc</td>
+                                    <td>@khoaHoc.GiangVien</td>
+                                    <td>@khoaHoc.ThoiGianKhaiGiang - @thoiGianKetThucDaDangKy</td>
+                                    <td>@string.Format("{0:N0} VNĐ", khoaHoc.HocPhi)</td>
+                                    <td>@khoaHoc.SoLuongHocVienHienTai / @khoaHoc.SoLuongHocVienToiDa</td>
+                                    @if (khoaHoc.ThoiGianKhaiGiang >= DateOnly.FromDateTime(DateTime.Now))
+                                    {
+                                        <td class="action_btn">
+                                            <a asp-action="HuyDangKyKhoaHocConfirmed" asp-route-id="@khoaHoc.MaKhoaHoc" class="btn btn-danger btn-sm action-btn" title="Hủy đăng ký">
+                                                <i class="fa-solid fa-xmark"></i>
+                                            </a>
+                                        </td>
+                                    }
+                                    else {
+                                        <td></td>
+                                    }
+                                </tr>
+                            }
+                        }
+                        @if(Count <= 0){
+                            <p>Không có khóa học nào.</p>
+                        }
+                    </tbody>
+                }
+                else
+                {
+                    <p>Bạn chưa đăng ký khóa học nào.</p>
+                }
+            </table>
+        </div>
+
+        <div class="table-responsive">
+            <h2 class="text-center">Danh sách khóa học đã kết thúc</h2>
+            <table class="table table-bordered table-hover event-table shadow-sm">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Mã</th>
+                        <th>Tên khóa học</th>
+                        <th>Giảng viên</th>
+                        <th>Thời gian giảng dạy</th>
+                        <th>Học phí</th>
+                        <th>Số lượng sinh viên</th>
+                    </tr>
+                </thead>
+                @if (ViewBag.DanhSachKhoaHocDaDangKy != null && ViewBag.DanhSachKhoaHocDaDangKy.Count > 0)
+                {
+                    int Count = 0;
+                    <tbody>
+                        @foreach (var khoaHoc in danhSachKhoaHocDaDangKy!)
+                        {
+                            
+                            if(khoaHoc.ThoiGianKetThuc != null && khoaHoc.ThoiGianKetThuc <= DateOnly.FromDateTime(DateTime.Now)){
+                                var thoiGianKetThucDaDangKy = khoaHoc.ThoiGianKetThuc?.ToString("dd-MM-yyyy") ?? "Chưa xác định";
+                                Count++;
+                                <tr>
+                                    <td>@khoaHoc.MaKhoaHoc</td>
+                                    <td>@khoaHoc.TenKhoaHoc</td>
+                                    <td>@khoaHoc.GiangVien</td>
+                                    <td>@khoaHoc.ThoiGianKhaiGiang - @thoiGianKetThucDaDangKy</td>
+                                    <td>@string.Format("{0:N0} VNĐ", khoaHoc.HocPhi)</td>
+                                    <td>@khoaHoc.SoLuongHocVienHienTai / @khoaHoc.SoLuongHocVienToiDa</td>
+                                </tr>
+                            }
+                        }
+                        @if(Count <= 0){
+                            <tr>
+                                <td>Không có khóa học nào</td>
+                            </tr>
+                        }
+                    </tbody>
+                }
+                else
+                {
+                    <tr>
+                        <td>Không có khóa học nào</td>
+                    </tr>
+                }
+            </table>
+        </div>
+    }
+</div>

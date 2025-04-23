@@ -19,7 +19,6 @@ namespace QuanLyTrungTamDaoTao.Areas.Admin.Controllers
             _context = context;
         }
 
-        // GET: Admin/QuanLyKhoaHoc
         #region Index
         public async Task<IActionResult> Index()
         {
@@ -27,22 +26,35 @@ namespace QuanLyTrungTamDaoTao.Areas.Admin.Controllers
         }
         #endregion
 
-        #region Details
-        public async Task<IActionResult> Details(string id)
+        #region Kết thúc khóa học
+        public async Task<IActionResult> End(string id)
         {
+
             if (id == null)
             {
-                return NotFound();
+                TempData["ErrorMessage"] = "Đã gặp vấn đề";
+                return RedirectToAction("Index");
             }
 
             var khoaHoc = await _context.KhoaHocs
                 .FirstOrDefaultAsync(m => m.MaKhoaHoc == id);
             if (khoaHoc == null)
             {
-                return NotFound();
+                TempData["ErrorMessage"] = "Đã gặp vấn đề";
+                return RedirectToAction("Index");
             }
 
-            return View(khoaHoc);
+            if(khoaHoc.ThoiGianKhaiGiang >= DateOnly.FromDateTime(DateTime.Now))
+            {
+                TempData["ErrorMessage"] = "Không thể kết thúc khóa học khi chưa bắt đầu.";
+                return RedirectToAction("Index");
+            }
+
+            khoaHoc.ThoiGianKetThuc = DateOnly.FromDateTime(DateTime.Now);
+            _context.Update(khoaHoc);
+            await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = "Bạn đã kết thúc khóa học thành công";
+            return RedirectToAction("Index");
         }
         #endregion
 
@@ -75,16 +87,22 @@ namespace QuanLyTrungTamDaoTao.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
+                if(khoaHoc.ThoiGianKetThuc <= khoaHoc.ThoiGianKhaiGiang)
+                {
+                    TempData["ErrorMessage"] = "Thời gian khai giảng và kết thúc không phù hợp.";
+                    return View(khoaHoc);
+                }
                 _context.Add(khoaHoc);
                 await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = "Bạn đã tạo thành công.";
                 return RedirectToAction(nameof(Index));
             }
+            TempData["ErrorMessage"] = "Tạo không thành công.";
             return View(khoaHoc);
         }
         #endregion
 
         #region Edit Khóa học
-        // GET: Admin/HomeAdmin/Edit/5
         public async Task<IActionResult> Edit(string id)
         {
             if (id == null)
@@ -100,8 +118,6 @@ namespace QuanLyTrungTamDaoTao.Areas.Admin.Controllers
             return View(khoaHoc);
         }
 
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(string id, [Bind("MaKhoaHoc,TenKhoaHoc,GiangVien,ThoiGianKhaiGiang,HocPhi,SoLuongHocVienToiDa")] KhoaHoc khoaHoc)
@@ -111,12 +127,18 @@ namespace QuanLyTrungTamDaoTao.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
+            if (ModelState.IsValid )
             {
+                if (khoaHoc.ThoiGianKetThuc <= khoaHoc.ThoiGianKhaiGiang)
+                {
+                    TempData["ErrorMessage"] = "Thời gian khai giảng và kết thúc không phù hợp.";
+                    return View(khoaHoc);
+                }
                 try
                 {
                     _context.Update(khoaHoc);
                     await _context.SaveChangesAsync();
+                    TempData["SuccessMessage"] = "Bạn đã chỉnh sửa thành công.";
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -131,6 +153,7 @@ namespace QuanLyTrungTamDaoTao.Areas.Admin.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+
             return View(khoaHoc);
         }
         #endregion
@@ -153,18 +176,40 @@ namespace QuanLyTrungTamDaoTao.Areas.Admin.Controllers
             return View(khoaHoc);
         }
 
-        // POST: Admin/HomeAdmin/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(string id)
         {
             var khoaHoc = await _context.KhoaHocs.FindAsync(id);
-            if (khoaHoc != null)
+            if (khoaHoc == null)
             {
-                _context.KhoaHocs.Remove(khoaHoc);
+                TempData["ErrorMessage"] = "Không tìm thấy khóa học.";
+                return RedirectToAction("Index");
             }
 
+            var listKhoaHocDaDangKy = await _context.DangKyKhoaHocs.Where(kh => kh.MaKhoaHoc == id)
+                                                                    .ToListAsync();
+
+            if (khoaHoc.ThoiGianKhaiGiang > DateOnly.FromDateTime(DateTime.Now))
+            {
+                foreach(DangKyKhoaHoc dangKy in listKhoaHocDaDangKy)
+                {
+                    _context.DangKyKhoaHocs.Remove(dangKy);
+                }
+            }
+            else
+            {
+                if (listKhoaHocDaDangKy != null && listKhoaHocDaDangKy.Count > 0)
+                {
+                    TempData["ErrorMessage"] = "Khóa học đã bắt đầu và có người học, không được xóa";
+                    return RedirectToAction("Index");
+
+                }
+            }
+
+            _context.KhoaHocs.Remove(khoaHoc);
             await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = "Bạn đã xóa thành công.";
             return RedirectToAction(nameof(Index));
         }
         #endregion

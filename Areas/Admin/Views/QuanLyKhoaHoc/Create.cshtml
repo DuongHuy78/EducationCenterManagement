@@ -4,6 +4,21 @@
     ViewData["Title"] = "Tạo Khóa Học";
     Layout = "~/Areas/Admin/Views/_AdminLayout.cshtml";
 }
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger" role="alert">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success" role="alert">
+        @TempData["SuccessMessage"]
+    </div>
+}
+
 <div class="container-fluid px-4">
     <!-- Phần tiêu đề -->
     <div class="row">
@@ -24,31 +39,36 @@
                         <form asp-action="CreatePost" autocomplete="off">
                             <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
                             <div class="mb-3">
-                                <label asp-for="MaKhoaHoc" class="form-label"></label>
+                                <label asp-for="MaKhoaHoc" class="form-label">Mã khóa học *</label>
                                 <input asp-for="MaKhoaHoc" class="form-control" value="@ViewBag.NewKhoaHocId" readonly />
                             </div>
                             <div class="mb-3">
-                                <label asp-for="TenKhoaHoc" class="form-label"></label>
+                                <label asp-for="TenKhoaHoc" class="form-label">Tên khóa học*</label>
                                 <input asp-for="TenKhoaHoc" class="form-control" />
                                 <span asp-validation-for="TenKhoaHoc" class="text-danger"></span>
                             </div>
                             <div class="mb-3">
-                                <label asp-for="GiangVien" class="form-label"></label>
+                                <label asp-for="GiangVien" class="form-label">Giảng viên dạy*</label>
                                 <input asp-for="GiangVien" class="form-control" />
                                 <span asp-validation-for="GiangVien" class="text-danger"></span>
                             </div>
                             <div class="mb-3">
-                                <label asp-for="ThoiGianKhaiGiang" class="form-label"></label>
+                                <label asp-for="ThoiGianKhaiGiang" class="form-label">Thời gian khai giảng*</label>
                                 <input asp-for="ThoiGianKhaiGiang" class="form-control" type="date" />
                                 <span asp-validation-for="ThoiGianKhaiGiang" class="text-danger"></span>
                             </div>
                             <div class="mb-3">
-                                <label asp-for="HocPhi" class="form-label"></label>
+                                <label asp-for="ThoiGianKetThuc" class="form-label">Thời gian kết thúc</label>
+                                <input asp-for="ThoiGianKetThuc" class="form-control" type="date" />
+                                <span asp-validation-for="ThoiGianKetThuc" class="text-danger"></span>
+                            </div>
+                            <div class="mb-3">
+                                <label asp-for="HocPhi" class="form-label">Học phí*</label>
                                 <input asp-for="HocPhi" class="form-control" type="number" min="0" step="0.01" />
                                 <span asp-validation-for="HocPhi" class="text-danger"></span>
                             </div>
                             <div class="mb-3">
-                                <label asp-for="SoLuongHocVienToiDa" class="form-label"></label>
+                                <label asp-for="SoLuongHocVienToiDa" class="form-label">Số lượng sinh viên tối đa</label>
                                 <input asp-for="SoLuongHocVienToiDa" class="form-control" type="number" min="1" />
                                 <span asp-validation-for="SoLuongHocVienToiDa" class="text-danger"></span>
                             </div>

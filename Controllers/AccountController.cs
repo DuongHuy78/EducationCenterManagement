@@ -13,10 +13,10 @@ namespace QuanLyTrungTamDaoTao.Controllers
 {
     public class AccountController : Controller
     {
-        private readonly QuanLyTrungTamDaoTaoContext db;
+        private readonly QuanLyTrungTamDaoTaoContext _db;
 
         public AccountController(QuanLyTrungTamDaoTaoContext context) {
-            db = context;
+            _db = context;
         }
 
         #region DangKy
@@ -36,18 +36,23 @@ namespace QuanLyTrungTamDaoTao.Controllers
             {
                try
                {
-                   if (db.HocViens.Any(h => h.Email == model.Email))
+                   if (_db.HocViens.Any(h => h.Email == model.Email))
                    {
                        ModelState.AddModelError("Email", "Email này đã được sử dụng.");
                        return View(model);
                    }
-                   if (db.TaiKhoans.Any(t => t.TenTaiKhoan == model.TaiKhoan))
+                   if (_db.TaiKhoans.Any(t => t.TenTaiKhoan == model.TaiKhoan))
                    {
                        ModelState.AddModelError("TaiKhoan", "Tài khoản này đã được sử dụng.");
                        return View(model);
                    }
+                    if (_db.HocViens.Any(t => t.SoDienThoai == model.SoDienThoai) || _db.QuanTriViens.Any(t => t.SoDienThoai == model.SoDienThoai))
+                    {
+                        ModelState.AddModelError("SoDienThoai", "Số điện thoại này đã được sử dụng.");
+                        return View(model);
+                    }
 
-                    var LastHV = await db.HocViens
+                    var LastHV = await _db.HocViens
                                         .OrderByDescending(HV => HV.MaHocVien)
                                         .FirstOrDefaultAsync();
                     string newMaHV;
@@ -69,19 +74,19 @@ namespace QuanLyTrungTamDaoTao.Controllers
                     newHV.Email = model.Email;
                     newHV.SoDienThoai = model.SoDienThoai;
 
-                    db.HocViens.Add(newHV);
-                    await db.SaveChangesAsync();
+                    _db.HocViens.Add(newHV);
+                    await _db.SaveChangesAsync();
 
                     var newTK = new TaiKhoan();
                     newTK.TenTaiKhoan = model.TaiKhoan;
                     newTK.MatKhau = Utils.hashPassword(model.MatKhau);
                     newTK.MaNguoiDung = newMaHV;
                     newTK.VaiTro = "HV";
-                    db.TaiKhoans.Add(newTK);
-                    await db.SaveChangesAsync();
+                    _db.TaiKhoans.Add(newTK);
+                    await _db.SaveChangesAsync();
 
                     //-------------------------đăng ký cho quản trị viên-----------------------------------------
-                    //var LastQTV = await db.QuanTriViens
+                    //var LastQTV = await _db.QuanTriViens
                     // .OrderByDescending(HV => HV.MaQuanTriVien)
                     // .FirstOrDefaultAsync();
                     //string newMaHV;
@@ -102,22 +107,22 @@ namespace QuanLyTrungTamDaoTao.Controllers
                     //newQTV.SoDienThoai = model.SoDienThoai;
                     //newQTV.Email = model.Email;
 
-                    //db.QuanTriViens.Add(newQTV);
-                    //await db.SaveChangesAsync();
+                    //_db.QuanTriViens.Add(newQTV);
+                    //await _db.SaveChangesAsync();
 
                     //var newTK = new TaiKhoan();
                     //newTK.TenTaiKhoan = model.TaiKhoan;
                     //newTK.MatKhau = Utils.hashPassword(model.MatKhau);
                     //newTK.MaNguoiDung = newMaHV;
                     //newTK.VaiTro = "QTV";
-                    //db.TaiKhoans.Add(newTK);
-                    //await db.SaveChangesAsync();
+                    //_db.TaiKhoans.Add(newTK);
+                    //await _db.SaveChangesAsync();
 
                     return RedirectToAction("Index", "Home");
                 }
                catch (Exception ex)
                {
-                   ModelState.AddModelError("", "Đã có lỗi xảy ra trong quá trình đăng ký.");
+                   ModelState.AddModelError("", $"Đã có lỗi xảy ra trong quá trình đăng ký. {ex.Message}");
                }
             }
             else
@@ -145,7 +150,7 @@ namespace QuanLyTrungTamDaoTao.Controllers
                 return View(model);
             }
 
-            var user = db.TaiKhoans.SingleOrDefault(user => user.TenTaiKhoan == model.userName);
+            var user = _db.TaiKhoans.SingleOrDefault(user => user.TenTaiKhoan == model.userName);
             if (user == null)
             {
                 ModelState.AddModelError("loi", "Tài khoản không tồn tại");
@@ -164,11 +169,10 @@ namespace QuanLyTrungTamDaoTao.Controllers
                     List<Claim> claims = new List<Claim>();
                     if (user.VaiTro == "HV")
                     {
-                        var hocVien = db.HocViens.SingleOrDefault(hv => hv.MaHocVien == user.MaNguoiDung);
-                        Console.WriteLine(hocVien.HoTen);
+                        var hocVien = _db.HocViens.SingleOrDefault(hv => hv.MaHocVien == user.MaNguoiDung);
 
-                        claims.Add(new Claim(ClaimTypes.Name, hocVien.HoTen));
-                        claims.Add(new Claim(ClaimTypes.Email, hocVien.Email));
+                        claims.Add(new Claim(ClaimTypes.Name, hocVien!.HoTen));
+                        claims.Add(new Claim(ClaimTypes.Email, hocVien.Email!));
                         claims.Add(new Claim("MaHocVien", hocVien.MaHocVien));
                         claims.Add(new Claim(ClaimTypes.Role, "HV"));
 
@@ -188,9 +192,8 @@ namespace QuanLyTrungTamDaoTao.Controllers
                     }
                     else if(user.VaiTro == "QTV")
                     {
-                        Console.WriteLine(user.TenTaiKhoan);
-                        var qtv = db.QuanTriViens.SingleOrDefault(QTV => QTV.MaQuanTriVien == user.MaNguoiDung);
-                        Console.WriteLine(qtv.TenQuanTriVien);
+                        var qtv = _db.QuanTriViens.SingleOrDefault(QTV => QTV.MaQuanTriVien == user.MaNguoiDung);
+                        Console.WriteLine(qtv!.TenQuanTriVien);
                         claims.Add(new Claim(ClaimTypes.Name, qtv.TenQuanTriVien));
                         claims.Add(new Claim(ClaimTypes.Email, qtv.Email));
                         claims.Add(new Claim("MaQuanTriVien", qtv.MaQuanTriVien));
@@ -210,7 +213,8 @@ namespace QuanLyTrungTamDaoTao.Controllers
                             return View(model);
                         }
 
-                        return Redirect(Url.Action("Dashboard", "HomeAdmin", new { area = "Admin" }));
+                        return RedirectToAction("Dashboard", "HomeAdmin", new { area = "Admin" });
+                           
                     }
                     else
                     {
@@ -230,7 +234,5 @@ namespace QuanLyTrungTamDaoTao.Controllers
             return RedirectToAction("Index", "Home");
         }
         #endregion
-
     }
-
 }

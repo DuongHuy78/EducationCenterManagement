@@ -1,81 +1,71 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
+    var danhSachKhoaHocDaDangKy = ViewBag.DanhSachKhoaHocDaDangKy as List<QuanLyTrungTamDaoTao.Models.KhoaHoc>;
 }
 
-        
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger" role="alert">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success" role="alert">
+        @TempData["SuccessMessage"]
+    </div>
+}
 <div class="wrapping">
     <div class="table-responsive">
-		<h2 class="text-center">Danh sách khóa học</h2>
-        <table class="table table-bordered table-hover event-table shadow-sm">
-            <thead class="table-dark">
-                <tr>
-                    <th>Tên khóa học</th>
-                    <th>Giảng viên</th>
-                    <th>Thời gian khai giảng</th>
-                    <th>Học phí</th>
-                    <th>Số lượng sinh viên tối đa</th>
-                </tr>
-            </thead>
+        <h2 class="text-center">Danh sách khóa học</h2>
+        
             @if (Model == null)
             {
                 <p>Không có khóa học nào.</p>
             }
             else
             {
-                <tbody>
-
-                    @foreach (var khoaHoc in Model)
-                    {
+                int Count = 0;
+                <table class="table table-bordered table-hover event-table shadow-sm">
+                    <thead class="table-dark">
                         <tr>
-                            <td>@khoaHoc.MaKhoaHoc</td>
-                            <td>@khoaHoc.TenKhoaHoc</td>
-                            <td>@khoaHoc.GiangVien</td>
-                            <td>@khoaHoc.ThoiGianKhaiGiang</td>
-                            <td>@khoaHoc.HocPhi</td>
-                            <td>@khoaHoc.SoLuongHocVienToiDa</td>
+                            <th>Mã</th>
+                            <th>Tên khóa học</th>
+                            <th>Giảng viên</th>
+                            <th>Thời gian giảng dạy</th>
+                            <th>Học phí</th>
+                            <th>Số lượng sinh viên</th>
+                            <th>Thao tác</th>
                         </tr>
-                    }
-                </tbody>
-            }
-        </table>
-    </div>
-
-    @if (User.Identity.IsAuthenticated)
-    {
-        <div class="table-responsive">
-            <h2 class="text-center">Danh sách khóa học bạn đã chọn</h2>
-            <table class="table table-bordered table-hover event-table shadow-sm">
-                <thead class="table-dark">
-                    <tr>
-                        <th>Tên khóa học</th>
-                        <th>Giảng viên</th>
-                        <th>Thời gian khai giảng</th>
-                        <th>Học phí</th>
-                        <th>Số lượng sinh viên tối đa</th>
-                    </tr>
-                </thead>
-                @if (Model == null)
-                {
-                    <p>Không có khóa học nào.</p>
-                }
-                else
-                {
+                    </thead>
                     <tbody>
-
                         @foreach (var khoaHoc in Model)
                         {
-                            <tr>
-                                <td>@khoaHoc.MaKhoaHoc</td>
-                                <td>@khoaHoc.TenKhoaHoc</td>
-                                <td>@khoaHoc.GiangVien</td>
-                                <td>@khoaHoc.ThoiGianKhaiGiang</td>
-                                <td>@khoaHoc.HocPhi</td>
-                                <td>@khoaHoc.SoLuongHocVienToiDa</td>
-                            </tr>
+                            if (khoaHoc.ThoiGianKetThuc == null || khoaHoc.ThoiGianKetThuc > DateOnly.FromDateTime(DateTime.Now)) {
+                                Count++;
+                                var thoiGianKetThuc = khoaHoc.ThoiGianKetThuc?.ToString("dd-MM-yyyy") ?? "Chưa xác định";
+                                <tr>
+                                    <td>@khoaHoc.MaKhoaHoc</td>
+                                    <td>@khoaHoc.TenKhoaHoc</td>
+                                    <td>@khoaHoc.GiangVien</td>
+                                    <td>@khoaHoc.ThoiGianKhaiGiang - @thoiGianKetThuc</td>
+                                    <td>@string.Format("{0:N0} VNĐ", khoaHoc.HocPhi)</td>
+                                    <td>@khoaHoc.SoLuongHocVienHienTai / @khoaHoc.SoLuongHocVienToiDa</td>
+                                    <td class="action_btn">
+                                        <a asp-action="DangKyKhoaHocConfirmed" asp-route-id="@khoaHoc.MaKhoaHoc" class="btn btn-success btn-sm action-btn align-items-center" title="Đăng Ký">
+                                            <i class="fa-solid fa-check"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        @if(Count <= 0) 
+                        {
+                            <p>Không có khóa học nào.</p>
                         }
                     </tbody>
-                }
-            </table>
-        </div>
-    }
+                </table>
+            }
+    </div>
 </div>

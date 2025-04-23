@@ -1,7 +1,6 @@
 ﻿
-
-function confirmAccept(EventId) {
-    console.log(EventId),
+function confirmHuyKhoaHoc(MaDangKy) {
+    console.log(MaDangKy),
     Swal.fire({
         title: 'Are you sure?',
         text: "You won't be able to revert this!",
@@ -11,17 +10,17 @@ function confirmAccept(EventId) {
         cancelButtonText: 'No, cancel!',
     }).then((result) => {
         if (result.isConfirmed) {
-            acceptEvent(EventId);
+            acceptEvent(MaDangKy);
         }
     });
 }
 
-async function acceptEvent(EventId) {
+async function acceptEvent(MaDangKy) {
     try {
         const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
 
         const response = await fetch(
-            `/Admin/HomeAdmin/acceptEvent`,
+            `/Home/DangKyKhoaHoc`,
             {
                 method: "POST",
                 headers: {
@@ -30,19 +29,13 @@ async function acceptEvent(EventId) {
 
                     "RequestVerificationToken": token // Thêm token vào header
                 },
-                body: JSON.stringify({ EventId }) // Gửi EventId trong body
+                body: JSON.stringify({ MaDangKy }) // Gửi EventId trong body
             }
         );
 
         // Kiểm tra nếu response không phải JSON
         const contentType = response.headers.get("content-type");
         if (!contentType || !contentType.includes("application/json")) {
-            // const html = await response.text();
-            // throw new Error(
-            //     html.includes("<!DOCTYPE html>")
-            //         ? "Lỗi hệ thống. Vui lòng tải lại trang"
-            //         : "Phản hồi không hợp lệ từ server"
-            // );
             console.error("Non-JSON response:", await response.text());
             throw new Error("Phản hồi không hợp lệ từ server");
         }
@@ -81,7 +74,7 @@ async function rejectEvent(EventId) {
         const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
 
         const response = await fetch(
-            `/Admin/HomeAdmin/rejectEvent`,
+            `/Home/HuyKhoaHoc`,
             {
                 method: "POST",
                 headers: {

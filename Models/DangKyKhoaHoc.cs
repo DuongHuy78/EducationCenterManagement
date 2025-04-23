@@ -5,17 +5,15 @@ namespace QuanLyTrungTamDaoTao.Models;
 
 public partial class DangKyKhoaHoc
 {
-    public int MaDangKy { get; set; }
+    public string MaDangKy { get; set; } = null!;
 
-    public string? MaHocVien { get; set; }
+    public string MaHocVien { get; set; } = null!;
 
-    public string? MaKhoaHoc { get; set; }
+    public string MaKhoaHoc { get; set; } = null!;
 
-    public DateTime? NgayDangKy { get; set; }
+    public DateOnly NgayDangKy { get; set; }
 
-    public DateOnly? NgayHuyDangKy { get; set; }
+    public virtual HocVien MaHocVienNavigation { get; set; } = null!;
 
-    public virtual HocVien? MaHocVienNavigation { get; set; }
-
-    public virtual KhoaHoc? MaKhoaHocNavigation { get; set; }
+    public virtual KhoaHoc MaKhoaHocNavigation { get; set; } = null!;
 }

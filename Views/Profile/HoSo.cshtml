@@ -1,0 +1,100 @@
+﻿@model QuanLyTrungTamDaoTao.Models.HocVien
+
+@{
+    ViewData["Title"] = "Hồ sơ";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger" role="alert">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success" role="alert">
+        @TempData["SuccessMessage"]
+    </div>
+}
+
+<div class="container my-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    @TempData["SuccessMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+            <div class="card shadow">
+                <div class="card-header bg-black text-white">
+                    <h3 class="mb-0">Chỉnh sửa thông tin</h3>
+                </div>
+                <div class="card-body">
+                    <form asp-action="ChinhSuaThonTinCaNhan" method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        <!-- MaHocVien được giữ nguyên và ẩn -->
+                        <input type="hidden" asp-for="MaHocVien" />
+
+                        <!-- Hiển thị thông tin mã học viên (chỉ đọc) -->
+                        <div class="mb-3 row">
+                            <label class="col-md-3 col-form-label">Mã học viên</label>
+                            <div class="col-md-9">
+                                <input class="form-control" value="@Model.MaHocVien" disabled readonly />
+                            </div>
+                        </div>
+
+                        <div class="mb-3 row">
+                            <label asp-for="HoTen" class="col-md-3 col-form-label">Họ và tên</label>
+                            <div class="col-md-9">
+                                <input asp-for="HoTen" class="form-control" readonly />
+                            </div>
+                        </div>
+
+                        <div class="mb-3 row">
+                            <label asp-for="NgaySinh" class="col-md-3 col-form-label">Ngày sinh</label>
+                            <div class="col-md-9">
+                                <input asp-for="NgaySinh" class="form-control" type="date" readonly />
+                            </div>
+                        </div>
+
+                        <div class="mb-3 row">
+                            <label asp-for="SoDienThoai" class="col-md-3 col-form-label">Số điện thoại</label>
+                            <div class="col-md-9">
+                                <input asp-for="SoDienThoai" class="form-control" readonly />
+                            </div>
+                        </div>
+
+                        <div class="mb-3 row">
+                            <label asp-for="Email" class="col-md-3 col-form-label">Email</label>
+                            <div class="col-md-9">
+                                <input asp-for="Email" class="form-control" type="email" readonly />
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <div class="col-md-9 offset-md-3">
+                                <!-- Nút Chỉnh sửa thông tin -->
+                                <a asp-action="ChinhSuaThonTinCaNhan" class="btn btn-secondary me-2">
+                                    <i class="fa-solid fa-pen-to-square"></i> Chỉnh sửa thông tin
+                                </a>
+
+                                <!-- Nút Quay về -->
+                                <a asp-action="Index" class="btn " asp-action="Index" asp-controller="Home">
+                                    <i class="fa-solid fa-arrow-left"></i> Quay về
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

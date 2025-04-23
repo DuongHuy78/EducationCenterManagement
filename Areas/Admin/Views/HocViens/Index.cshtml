@@ -1,0 +1,76 @@
+﻿@model IEnumerable<QuanLyTrungTamDaoTao.Models.HocVien>
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    ViewData["Title"] = "Quản lý học viên";
+    Layout = "~/Areas/Admin/Views/_AdminLayout.cshtml";
+}
+
+<div class="row">
+    <div class="col-12">
+        <div class="card shadow-sm mb-4" style="background-color: #f8f9fa;">
+            <div class="card-body text-center py-4">
+                <h1 class="display-6 fw-bold mb-0">Quản lý học viên</h1>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger" role="alert">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success" role="alert">
+        @TempData["SuccessMessage"]
+    </div>
+}
+
+<div class="wrapping">
+    <div class="table-responsive">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="text-lg-start">Danh sách học viên</h2>
+        </div>
+        <table class="table table-bordered table-hover event-table shadow-sm">
+            <thead class="table-dark">
+                <tr>
+                    <th>Mã học viên</th>
+                    <th>Họ tên</th>
+                    <th>Ngày sinh</th>
+                    <th>Số điện thoại</th>
+                    <th>Email</th>
+                    <th>Thao tác</th>
+                </tr>
+            </thead>
+            @if (Model == null || !Model.Any())
+            {
+                <tr>
+                    <td colspan="6" class="text-center py-3">Không có học viên nào.</td>
+                </tr>
+            }
+            else
+            {
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@item.MaHocVien</td>
+                            <td>@item.HoTen</td>
+                            <td>@item.NgaySinh</td>
+                            <td>@item.SoDienThoai</td>
+                            <td>@item.Email</td>
+                            <td class="action_btn">
+                                <a asp-action="DanhSachKhoaHoc" asp-route-id="@item.MaHocVien" class="btn btn-success btn-sm action-btn" title="Chỉnh sửa">
+                                    <i class="fa-solid bi-list-check"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            }
+        </table>
+    </div>
+</div>

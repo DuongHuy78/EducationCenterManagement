@@ -16,23 +16,19 @@ namespace QuanLyTrungTamDaoTao
             builder.Services.AddDbContext<QuanLyTrungTamDaoTaoContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DataBase")));
 
-            builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie (
+            builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(
                 options =>
                 {
                     options.LoginPath = "/Account/DangNhap";
                     options.LogoutPath = "/Account/DangXuat";
                     options.AccessDeniedPath = "/AccessDenied";
-                })
-                .AddCookie("Admin", options =>
-                {
-                    options.LoginPath = "/Account/Login";
-                    options.LogoutPath = "/Admin/HomeAdmin/Logout";
-                    options.AccessDeniedPath = "/Account/AccessDenied";
-                    options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
-                    options.SlidingExpiration = true;
                 });
 
-
+            builder.Services.AddAuthorization(options =>
+            {
+                options.AddPolicy("Admin", policy => policy.RequireRole("QTV"));
+                options.AddPolicy("HocVien", policy => policy.RequireRole("HV"));
+            });
 
 
             //builder.Services.AddAuthentication()
@@ -65,7 +61,7 @@ namespace QuanLyTrungTamDaoTao
 
             app.MapControllerRoute(
                 name: "Admin",
-                pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
+                pattern: "{area:exists}/{controller=HomeAdmin}/{action=Dashboard}/{id?}");
 
             app.MapControllerRoute(
                 name: "default",

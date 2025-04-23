@@ -13,11 +13,13 @@ public partial class KhoaHoc
 
     public DateOnly ThoiGianKhaiGiang { get; set; }
 
+    public DateOnly? ThoiGianKetThuc { get; set; }
+
     public decimal HocPhi { get; set; }
 
     public int SoLuongHocVienToiDa { get; set; }
 
-    public int SoLuongHocVienHienTai { get; set; } = 0;
+    public int SoLuongHocVienHienTai { get; set; }
 
     public virtual ICollection<DangKyKhoaHoc> DangKyKhoaHocs { get; set; } = new List<DangKyKhoaHoc>();
 }

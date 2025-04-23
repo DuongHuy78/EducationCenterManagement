@@ -29,27 +29,30 @@ public partial class QuanLyTrungTamDaoTaoContext : DbContext
     {
         modelBuilder.Entity<DangKyKhoaHoc>(entity =>
         {
-            entity.HasKey(e => e.MaDangKy).HasName("PK__DangKyKh__BA90F02DE3350D1D");
+            entity.HasKey(e => e.MaDangKy).HasName("PK__tmp_ms_x__BA90F02D7434FD03");
 
             entity.ToTable("DangKyKhoaHoc");
 
+            entity.Property(e => e.MaDangKy)
+                .HasMaxLength(10)
+                .IsUnicode(false);
             entity.Property(e => e.MaHocVien)
                 .HasMaxLength(10)
                 .IsUnicode(false);
             entity.Property(e => e.MaKhoaHoc)
                 .HasMaxLength(10)
                 .IsUnicode(false);
-            entity.Property(e => e.NgayDangKy)
-                .HasDefaultValueSql("(getdate())")
-                .HasColumnType("datetime");
+            entity.Property(e => e.NgayDangKy).HasDefaultValueSql("(getdate())");
 
             entity.HasOne(d => d.MaHocVienNavigation).WithMany(p => p.DangKyKhoaHocs)
                 .HasForeignKey(d => d.MaHocVien)
-                .HasConstraintName("FK__DangKyKho__MaHoc__4D94879B");
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__DangKyKho__MaHoc__17036CC0");
 
             entity.HasOne(d => d.MaKhoaHocNavigation).WithMany(p => p.DangKyKhoaHocs)
                 .HasForeignKey(d => d.MaKhoaHoc)
-                .HasConstraintName("FK__DangKyKho__MaKho__4E88ABD4");
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__DangKyKho__MaKho__3C34F16F");
         });
 
         modelBuilder.Entity<HocVien>(entity =>
@@ -72,7 +75,7 @@ public partial class QuanLyTrungTamDaoTaoContext : DbContext
 
         modelBuilder.Entity<KhoaHoc>(entity =>
         {
-            entity.HasKey(e => e.MaKhoaHoc).HasName("PK__KhoaHoc__48F0FF9846C8EB35");
+            entity.HasKey(e => e.MaKhoaHoc).HasName("PK__tmp_ms_x__48F0FF98085DAFDC");
 
             entity.ToTable("KhoaHoc");
 

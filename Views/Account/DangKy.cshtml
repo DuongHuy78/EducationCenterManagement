@@ -48,21 +48,11 @@
         <input type="password" asp-for="MatKhau" class="input" placeholder="Enter your Password">
     </div>
 
-    <button type="submit" class="button-submit">Sign Up</button>
-    <p class="p">
-        Have an account? <span class="span">Sign in</span>
-    </p>
-    <p class="p line">Or With</p>
-    <div class="flex-row">
-        <button type="button" class="btn google">  
-            <!-- Google SVG -->
-            Google
-        </button>
-        <button type="button" class="btn facebook">
-            <!-- Facebook SVG -->
-            Facebook
-        </button>
+    <button type="submit" class="button-submit">Đăng Ký</button>
+    <div class="card-footer bg-light text-center py-3">
+        <p class="mb-0">Đã có tài khoản? <a asp-controller="Account" asp-action="DangNhap" class="link-primary">Đăng nhập ngay</a></p>
     </div>
+
 </form>
 
 

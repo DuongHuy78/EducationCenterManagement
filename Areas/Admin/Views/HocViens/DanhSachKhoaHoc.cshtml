@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<QuanLyTrungTamDaoTao.Models.KhoaHoc>
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Danh sách khóa học học viên đã đăng ký";
     Layout = "~/Areas/Admin/Views/_AdminLayout.cshtml";
 }
 
@@ -9,7 +9,7 @@
     <div class="col-12">
         <div class="card shadow-sm mb-4" style="background-color: #f8f9fa;">
             <div class="card-body text-center py-4">
-                <h1 class="display-6 fw-bold mb-0">Quản lý khóa học</h1>
+                <h1 class="display-6 fw-bold mb-0">Quản lý học viên</h1>
             </div>
         </div>
     </div>
@@ -29,12 +29,11 @@
     </div>
 }
 
+
 <div class="wrapping">
     <div class="table-responsive">
         <div class=" d-flex justify-content-between align-items-center mb-3">
             <h2 class="text-lg-start">Danh sách khóa học</h2>
-            <a asp-area="Admin" asp-controller="QuanLyKhoaHoc" asp-action="Create" class="btn btn-secondary create-btn">
-                <i class="fa-solid fa-plus"></i> Tạo khóa học</a>
         </div>
         <table class="table table-bordered table-hover event-table shadow-sm">
             <thead class="table-dark">
@@ -45,8 +44,7 @@
                     <th>Thời gian giảng dạy</th>
                     <th>Học phí</th>
                     <th>Số lượng sinh viên</th>
-                    <th>Doanh thu</th>
-                    <th>Thao tác</th>
+                    <th>Học phí</th>
                 </tr>
             </thead>
             @if (Model == null)
@@ -60,7 +58,7 @@
                     @foreach (var khoaHoc in Model)
                     {
                         Decimal DoanhThu = khoaHoc.SoLuongHocVienHienTai * khoaHoc.HocPhi;
-						var thoiGianKetThuc = khoaHoc.ThoiGianKetThuc?.ToString("dd-MM-yyyy") ?? "Chưa xác định";
+                        var thoiGianKetThuc = khoaHoc.ThoiGianKetThuc?.ToString("dd-MM-yyyy") ?? "Chưa xác định";
                         <tr>
                             <td>@khoaHoc.MaKhoaHoc</td>
                             <td>@khoaHoc.TenKhoaHoc</td>
@@ -68,18 +66,7 @@
                             <td>@khoaHoc.ThoiGianKhaiGiang - @thoiGianKetThuc</td>
                             <td>@String.Format("{0:N0} VNĐ", khoaHoc.HocPhi)</td>
                             <td>@khoaHoc.SoLuongHocVienHienTai / @khoaHoc.SoLuongHocVienToiDa</td>
-                            <td>@String.Format("{0:N0} VNĐ", @DoanhThu)</td>
-                            <td class="action_btn">
-                                <a asp-action="Edit" asp-route-id="@khoaHoc.MaKhoaHoc" class="btn btn-success btn-sm action-btn" title="Chỉnh sửa">
-                                    <i class="fa-solid fa-pen-to-square"></i>
-                                </a>
-                                <a asp-action="End" asp-route-id="@khoaHoc.MaKhoaHoc" class="btn btn-warning btn-sm action-btn" title="Kết thúc">
-                                    <i class="fa-solid fa-solid fa-stop-circle"></i>
-                                </a>
-                                <a asp-action="Delete" asp-route-id="@khoaHoc.MaKhoaHoc" class="btn btn-danger btn-sm action-btn" title="Xóa">
-                                    <i class="fa-solid fa-xmark"></i>
-                                </a>
-                            </td>
+                            <td>@String.Format("{0:N0} VNĐ", khoaHoc.HocPhi)</td>
                         </tr>
                     }
                 </tbody>
