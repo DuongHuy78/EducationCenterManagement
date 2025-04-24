@@ -38,7 +38,7 @@ namespace QuanLyTrungTamDaoTao.Controllers
 
         #region Chỉnh xửa thông tin cá nhân
         [HttpGet]
-        public async Task<IActionResult> ChinhSuaThonTinCaNhan()
+        public async Task<IActionResult> ChinhSuaThongTinCaNhan()
         {
             var maHocVien = User.FindFirst("MaHocVien")?.Value;
             if (maHocVien == null)
@@ -55,41 +55,47 @@ namespace QuanLyTrungTamDaoTao.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> ChinhSuaThonTinCaNhan([Bind("MaHocVien,HoTen,NgaySinh,SoDienThoai,Email")] HocVien hocVien)
         {
-
-            var maHocVien = User.FindFirst("MaHocVien")?.Value;
-            if (string.IsNullOrEmpty(maHocVien) || maHocVien != hocVien.MaHocVien)
-            {
-                // Người dùng không có quyền hoặc đang cố sửa thông tin của người khác
-                return RedirectToAction("DangNhap", "Account");
-            }
-
             if (ModelState.IsValid)
             {
                 try
                 {
-                    var currentUser = await _context.HocViens.FirstAsync(hv => hv.MaHocVien == hocVien.MaHocVien);
+                    var maHocVien = User.FindFirst("MaHocVien")?.Value;
+                    if (maHocVien == null)
+                    {
+                        return NotFound();
+                    }
 
-                    if ((await _context.HocViens.AnyAsync(hv => hv.Email == hocVien.Email) && currentUser.Email != hocVien.Email) 
+                    if(hocVien.MaHocVien != maHocVien)
+                    {
+                        return NotFound();
+                    }
+
+                    var currentHV = await _context.HocViens.FirstAsync(hv => hv.MaHocVien == hocVien.MaHocVien);
+
+                    if (currentHV == null)
+                    {
+                        return NotFound();
+                    }
+                    if ((await _context.HocViens.AnyAsync(hv => hv.Email == hocVien.Email) && currentHV.Email != hocVien.Email)
                         || await _context.QuanTriViens.AnyAsync(qtv => qtv.Email == hocVien.Email))
                     {
                         TempData["ErrorMessage"] = "Email đã bị trùng";
                         return View(hocVien);
                     }
 
-                    if ((await _context.HocViens.AnyAsync(hv => hv.SoDienThoai == hocVien.SoDienThoai) && currentUser.SoDienThoai != hocVien.SoDienThoai)
+                    if ((await _context.HocViens.AnyAsync(hv => hv.SoDienThoai == hocVien.SoDienThoai) && currentHV.SoDienThoai != hocVien.SoDienThoai)
                         || await _context.QuanTriViens.AnyAsync(qtv => qtv.SoDienThoai == hocVien.SoDienThoai))
                     {
                         TempData["ErrorMessage"] = "Số điện thoại đã bị trùng";
                         return View(hocVien);
                     }
 
-                    currentUser.HoTen = hocVien.HoTen;
-                    currentUser.NgaySinh = hocVien.NgaySinh;
-                    currentUser.SoDienThoai = hocVien.SoDienThoai;
-                    currentUser.Email = hocVien.Email;
+                    currentHV.HoTen = hocVien.HoTen;
+                    currentHV.NgaySinh = hocVien.NgaySinh;
+                    currentHV.SoDienThoai = hocVien.SoDienThoai;
+                    currentHV.Email = hocVien.Email;
 
                     await _context.SaveChangesAsync();
                     TempData["SuccessMessage"] = "Cập nhật thông tin thành công!";
@@ -104,37 +110,23 @@ namespace QuanLyTrungTamDaoTao.Controllers
                         claims.Remove(nameClaim);
                         claims.Add(new Claim(ClaimTypes.Name, hocVien.HoTen));
 
-                        // Tạo ClaimsIdentity và ClaimsPrincipal mới
                         var identity = new ClaimsIdentity(claims, "Cookie");
                         var principal = new ClaimsPrincipal(identity);
 
-                        // Đăng nhập lại với thông tin mới
                         await HttpContext.SignInAsync(
                             "Cookies",
                             principal,
                             new AuthenticationProperties { IsPersistent = true });
                     }
                 }
-                catch (DbUpdateConcurrencyException)
+                catch (Exception ex)
                 {
-                    if (!HocVienExists(hocVien.MaHocVien))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    TempData["ErrorMessage"] = "Đã có lỗi " + ex.Message;
                 }
                 return RedirectToAction("Index", "Home");
             }
             return View(hocVien);
         }
         #endregion
-
-        private bool HocVienExists(string id)
-        {
-            return _context.HocViens.Any(e => e.MaHocVien == id);
-        }
     }
 }

@@ -53,7 +53,7 @@
                                     <td>@string.Format("{0:N0} VNĐ", khoaHoc.HocPhi)</td>
                                     <td>@khoaHoc.SoLuongHocVienHienTai / @khoaHoc.SoLuongHocVienToiDa</td>
                                     <td class="action_btn">
-                                        <a asp-action="DangKyKhoaHocConfirmed" asp-route-id="@khoaHoc.MaKhoaHoc" class="btn btn-success btn-sm action-btn align-items-center" title="Đăng Ký">
+                                        <a asp-action="DangKyKhoaHocConfirmed" asp-controller="KhoaHoc" asp-route-id="@khoaHoc.MaKhoaHoc" class="btn btn-success btn-sm action-btn align-items-center" title="Đăng Ký">
                                             <i class="fa-solid fa-check"></i>
                                         </a>
                                     </td>

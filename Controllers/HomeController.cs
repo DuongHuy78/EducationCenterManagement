@@ -22,6 +22,14 @@ namespace QuanLyTrungTamDaoTao.Controllers
         #region  Hiển thị khóa học
         public async Task<IActionResult> Index()
         {
+            if (User.Identity!.IsAuthenticated)
+            {
+                if (User.IsInRole("QTV"))
+                {
+                    return RedirectToAction("Dashboard", "HomeAdmin", new { area = "Admin" });
+                }
+            }
+
             var ngayHienTai = DateOnly.FromDateTime(DateTime.Now);
             var danhSachKhoaHoc = await _db.KhoaHocs.Where(kh => kh.ThoiGianKhaiGiang > ngayHienTai)
                                                     .ToListAsync();

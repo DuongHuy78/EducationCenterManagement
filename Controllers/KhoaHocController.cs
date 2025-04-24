@@ -119,7 +119,8 @@ namespace QuanLyTrungTamDaoTao.Controllers
             if (dangKyKhoaHoc != null)
             {
                 KH!.SoLuongHocVienHienTai = KH.SoLuongHocVienHienTai - 1;
-                if (KH.SoLuongHocVienHienTai <= 0) KH.SoLuongHocVienHienTai = 0;
+                if (KH.SoLuongHocVienHienTai <= 0) 
+                    KH.SoLuongHocVienHienTai = 0;
                 _db.KhoaHocs.Update(KH);
                 _db.DangKyKhoaHocs.Remove(dangKyKhoaHoc);
                 await _db.SaveChangesAsync();

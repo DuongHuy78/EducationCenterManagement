@@ -63,8 +63,11 @@
                             <td>@item.SoDienThoai</td>
                             <td>@item.Email</td>
                             <td class="action_btn">
-                                <a asp-action="DanhSachKhoaHoc" asp-route-id="@item.MaHocVien" class="btn btn-success btn-sm action-btn" title="Chỉnh sửa">
-                                    <i class="fa-solid bi-list-check"></i>
+                                <a asp-action="DanhSachKhoaHoc" asp-route-id="@item.MaHocVien" class="btn btn-success btn-sm action-btn" title="Xem khóa học đã đăng ký">
+                                    <i class="fa fa-list-alt"></i>
+                                </a>
+                                <a asp-action="ChinhSuaThongTinHocVien" asp-route-id="@item.MaHocVien" class="btn btn-warning btn-sm action-btn" title="Chỉnh sửa thông tin">
+                                    <i class="fa fa-pen-to-square"></i>
                                 </a>
                             </td>
                         </tr>

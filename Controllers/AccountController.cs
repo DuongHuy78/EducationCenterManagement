@@ -153,7 +153,7 @@ namespace QuanLyTrungTamDaoTao.Controllers
             var user = _db.TaiKhoans.SingleOrDefault(user => user.TenTaiKhoan == model.userName);
             if (user == null)
             {
-                ModelState.AddModelError("loi", "Tài khoản không tồn tại");
+                TempData["ErrorMessage"] = "Tài khoản không tồn tại";
             }
             else
             {
@@ -205,7 +205,7 @@ namespace QuanLyTrungTamDaoTao.Controllers
                         try
                         {
                             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, claimsPrincipal);
-                            Console.WriteLine("Đăng nhập thành công");
+                            TempData["SuccessMessage"] = "Đăng nhập thành công";
                         }
                         catch (Exception ex)
                         {
@@ -218,7 +218,7 @@ namespace QuanLyTrungTamDaoTao.Controllers
                     }
                     else
                     {
-                        ModelState.AddModelError("loi", "Vai trò không phù hợp");
+                        TempData["ErrorMessage"] = "Vai trò không phù hợp";
                     }
                 }
             }

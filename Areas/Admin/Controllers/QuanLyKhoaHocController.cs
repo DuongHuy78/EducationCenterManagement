@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +11,7 @@ using QuanLyTrungTamDaoTao.Models;
 namespace QuanLyTrungTamDaoTao.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = "QTV")]
     public class QuanLyKhoaHocController : Controller
     {
         private readonly QuanLyTrungTamDaoTaoContext _context;
@@ -92,6 +94,13 @@ namespace QuanLyTrungTamDaoTao.Areas.Admin.Controllers
                     TempData["ErrorMessage"] = "Thời gian khai giảng và kết thúc không phù hợp.";
                     return View(khoaHoc);
                 }
+
+                if(khoaHoc.ThoiGianKhaiGiang <= DateOnly.FromDateTime(DateTime.Now))
+                {
+                    TempData["ErrorMessage"] = "Thời gian khai giảng không phù hợp.";
+                    return View(khoaHoc);
+                }
+
                 _context.Add(khoaHoc);
                 await _context.SaveChangesAsync();
                 TempData["SuccessMessage"] = "Bạn đã tạo thành công.";
@@ -120,7 +129,7 @@ namespace QuanLyTrungTamDaoTao.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("MaKhoaHoc,TenKhoaHoc,GiangVien,ThoiGianKhaiGiang,HocPhi,SoLuongHocVienToiDa")] KhoaHoc khoaHoc)
+        public async Task<IActionResult> Edit(string id, [Bind("MaKhoaHoc,TenKhoaHoc,GiangVien,ThoiGianKhaiGiang,ThoiGianKetThuc,HocPhi,SoLuongHocVienToiDa")] KhoaHoc khoaHoc)
         {
             if (id != khoaHoc.MaKhoaHoc)
             {
@@ -129,26 +138,28 @@ namespace QuanLyTrungTamDaoTao.Areas.Admin.Controllers
 
             if (ModelState.IsValid )
             {
+                var currentKH = await _context.KhoaHocs.FirstAsync(kh => kh.MaKhoaHoc == khoaHoc.MaKhoaHoc);
                 if (khoaHoc.ThoiGianKetThuc <= khoaHoc.ThoiGianKhaiGiang)
                 {
                     TempData["ErrorMessage"] = "Thời gian khai giảng và kết thúc không phù hợp.";
                     return View(khoaHoc);
                 }
-                try
+
+                // chỉ cho phép đổi khi
+                // 1) cả sau khi đổi và trc khi đổi thời gian khai giảng đều > now
+                // 2) nếu sau khi đổi < now thì chỉ có 1 th là sau khi đổi = trc khi đổi
+                if ((khoaHoc.ThoiGianKhaiGiang > DateOnly.FromDateTime(DateTime.Now) && currentKH.ThoiGianKhaiGiang > DateOnly.FromDateTime(DateTime.Now))
+                    || khoaHoc.ThoiGianKhaiGiang <= DateOnly.FromDateTime(DateTime.Now) && khoaHoc.ThoiGianKhaiGiang == currentKH.ThoiGianKhaiGiang)
                 {
-                    _context.Update(khoaHoc);
-                    await _context.SaveChangesAsync();
-                    TempData["SuccessMessage"] = "Bạn đã chỉnh sửa thành công.";
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!KhoaHocExists(khoaHoc.MaKhoaHoc))
+                    try
                     {
-                        return NotFound();
+                        _context.KhoaHocs.Update(khoaHoc);
+                        await _context.SaveChangesAsync();
+                        TempData["SuccessMessage"] = "Bạn đã chỉnh sửa thành công.";
                     }
-                    else
+                    catch (Exception ex)
                     {
-                        throw;
+                        TempData["ErrorMessage"] = "Đã có lỗi trong quá trình chỉnh sửa" + ex.Message;
                     }
                 }
                 return RedirectToAction(nameof(Index));
@@ -213,9 +224,5 @@ namespace QuanLyTrungTamDaoTao.Areas.Admin.Controllers
             return RedirectToAction(nameof(Index));
         }
         #endregion
-        private bool KhoaHocExists(string id)
-        {
-            return _context.KhoaHocs.Any(e => e.MaKhoaHoc == id);
-        }
     }
 }

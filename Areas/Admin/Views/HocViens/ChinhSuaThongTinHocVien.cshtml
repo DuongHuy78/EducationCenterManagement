@@ -1,0 +1,94 @@
+﻿@model QuanLyTrungTamDaoTao.Models.HocVien
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    ViewData["Title"] = "Chỉnh sửa thông tin";
+    Layout = "~/Areas/Admin/Views/_AdminLayout.cshtml";
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger" role="alert">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success" role="alert">
+        @TempData["SuccessMessage"]
+    </div>
+}
+
+<div class="container my-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            @if(TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    @TempData["SuccessMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+            <div class="card shadow">
+                <div class="card-header bg-black text-white">
+                    <h3 class="mb-0">Chỉnh sửa thông tin</h3>
+                </div>
+                <div class="card-body">
+                    <form asp-action="ChinhSuaThongTinHocVien" method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                        <input type="hidden" asp-for="MaHocVien" />
+                        <div class="mb-3 row">
+                            <label class="col-md-3 col-form-label">Mã học viên</label>
+                            <div class="col-md-9">
+                                <input class="form-control" value="@Model.MaHocVien" disabled />
+                                <small class="text-muted">Mã học viên không thể thay đổi</small>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3 row">
+                            <label asp-for="HoTen" class="col-md-3 col-form-label">Họ và tên</label>
+                            <div class="col-md-9">
+                                <input asp-for="HoTen" class="form-control" />
+                                <span asp-validation-for="HoTen" class="text-danger"></span>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3 row">
+                            <label asp-for="NgaySinh" class="col-md-3 col-form-label">Ngày sinh</label>
+                            <div class="col-md-9">
+                                <input asp-for="NgaySinh" class="form-control" type="date" />
+                                <span asp-validation-for="NgaySinh" class="text-danger"></span>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3 row">
+                            <label asp-for="SoDienThoai" class="col-md-3 col-form-label">Số điện thoại</label>
+                            <div class="col-md-9">
+                                <input asp-for="SoDienThoai" class="form-control" />
+                                <span asp-validation-for="SoDienThoai" class="text-danger"></span>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3 row">
+                            <label asp-for="Email" class="col-md-3 col-form-label">Email</label>
+                            <div class="col-md-9">
+                                <input asp-for="Email" class="form-control" type="email" />
+                                <span asp-validation-for="Email" class="text-danger"></span>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-end gap-2">
+                            <button type="submit" class="btn btn-primary">Lưu</button>
+                            <a asp-action="XoaHocVien" asp-controller="HocViens" asp-route-id="@Model.MaHocVien"  class="btn btn-danger">Xóa học viên</a>
+                            <a asp-action="Index" asp-controller="HocViens" class="btn btn-secondary">Hủy</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
