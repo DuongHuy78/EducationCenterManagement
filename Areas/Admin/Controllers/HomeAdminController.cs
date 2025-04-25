@@ -13,7 +13,7 @@ using Microsoft.AspNetCore.Authorization;
 namespace QuanLyTrungTamDaoTao.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Authorize(Roles = "QTV")]
+    [Authorize("Admin")]
     public class HomeAdminController : Controller
     {
         private readonly QuanLyTrungTamDaoTaoContext _context;
@@ -34,7 +34,6 @@ namespace QuanLyTrungTamDaoTao.Areas.Admin.Controllers
             var ngayHienTai = DateOnly.FromDateTime(DateTime.Now);
             var ngayBatDau = ngayHienTai.AddMonths(-5);
 
-            // danh sách tất cả 6 tháng gần đây
             var monthList = new List<MonthlyRegistration>();
             for (int i = 0; i <= 5; i++)
             {
@@ -48,8 +47,6 @@ namespace QuanLyTrungTamDaoTao.Areas.Admin.Controllers
                 });
             }
             
-
-            // Truy vấn đăng ký doanh thu trong 6 tháng gần đây
             var dangKyTrong6Thang = await _context.DangKyKhoaHocs
                         .Where(dk => dk.NgayDangKy >= ngayBatDau && dk.NgayDangKy <= ngayHienTai)
                         .GroupBy(dk => new { dk.NgayDangKy.Year, dk.NgayDangKy.Month })
@@ -71,7 +68,6 @@ namespace QuanLyTrungTamDaoTao.Areas.Admin.Controllers
                 return existingData != null ? existingData.Count : 0;
             }).Reverse().ToArray(); // Đảo ngược để hiển thị từ tháng xa nhất đến gần nhất
 
-            // Tạo mảng doanh thu theo tháng
             var revenueData = monthList.Select(m => 
             {
                 var existingData = dangKyTrong6Thang
@@ -90,15 +86,14 @@ namespace QuanLyTrungTamDaoTao.Areas.Admin.Controllers
             ViewBag.TotalKhoaHoc = totalkhoaHoc;
             ViewBag.TotalHocVien = totalHocVien;
             ViewBag.TotalDoanhThu = totalDoanhThu;
-            ViewBag.DangKyData = combinedData; // Mảng số lượng đăng ký theo tháng
-            ViewBag.DoanhThuData = revenueData; // Mảng doanh thu theo tháng
+            ViewBag.DangKyData = combinedData;
+            ViewBag.DoanhThuData = revenueData;
             
             // Danh sách tên tháng để hiển thị trên biểu đồ
             ViewBag.MonthLabels = monthList.Select(m => $"{m.Month}/{m.Year}").Reverse().ToArray();
             return View();
         }
 
-        // Lớp hỗ trợ
         public class MonthlyRegistration
         {
             public int Year { get; set; }
@@ -116,6 +111,7 @@ namespace QuanLyTrungTamDaoTao.Areas.Admin.Controllers
             return RedirectToAction("DangNhap", "Account", new { area = "" });
         }
         #endregion
+
 
         private bool KhoaHocExists(string id)
         {

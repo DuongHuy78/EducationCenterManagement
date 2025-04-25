@@ -34,13 +34,9 @@
                     <h3 class="mb-0">Chỉnh sửa thông tin</h3>
                 </div>
                 <div class="card-body">
-                    <form asp-action="ChinhSuaThonTinCaNhan" method="post">
+                    <form asp-action="ChinhSuaThongTinCaNhan" method="post">
                         <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
-                        
-                        <!-- MaHocVien được giữ nguyên và ẩn -->
                         <input type="hidden" asp-for="MaHocVien" />
-                        
-                        <!-- Hiển thị thông tin mã học viên (chỉ đọc) -->
                         <div class="mb-3 row">
                             <label class="col-md-3 col-form-label">Mã học viên</label>
                             <div class="col-md-9">

@@ -30,14 +30,6 @@ namespace QuanLyTrungTamDaoTao
                 options.AddPolicy("HocVien", policy => policy.RequireRole("HV"));
             });
 
-
-            //builder.Services.AddAuthentication()
-            //    .AddGoogle(options =>
-            //    {
-            //        options.ClientId = "";
-            //        options.ClientSecret = "";
-            //    });
-
             builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
 
             var app = builder.Build();

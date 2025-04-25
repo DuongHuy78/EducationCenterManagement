@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
@@ -13,7 +14,7 @@ using QuanLyTrungTamDaoTao.Models;
 namespace QuanLyTrungTamDaoTao.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Authorize(Roles = "QTV")]
+    [Authorize("Admin")]
     public class HocViensController : Controller
     {
         private readonly QuanLyTrungTamDaoTaoContext _context;
@@ -87,6 +88,17 @@ namespace QuanLyTrungTamDaoTao.Areas.Admin.Controllers
                         TempData["ErrorMessage"] = "Số điện thoại đã bị trùng";
                         return View(hocVien);
                     }
+                    if(hocVien.HoTen == null || hocVien.NgaySinh == null || hocVien.Email == null || hocVien.SoDienThoai == null)
+                    {
+                        TempData["ErrorMessage"] = "Nhập đầy đủ thông tin";
+                        return View(hocVien);
+                    }
+
+                    if (!Regex.IsMatch(hocVien.SoDienThoai, "^(0?)(3[2-9]|5[6|8|9]|7[0|6-9]|8[0-6|8|9]|9[0-4|6-9])[0-9]{7}$"))
+                    {
+                        TempData["ErrorMessage"] = "Số điện thoại định dạng không phù hợp";
+                        return View(hocVien);
+                    }
 
                     currentHV.HoTen = hocVien.HoTen;
                     currentHV.NgaySinh = hocVien.NgaySinh;
@@ -95,31 +107,12 @@ namespace QuanLyTrungTamDaoTao.Areas.Admin.Controllers
 
                     await _context.SaveChangesAsync();
                     TempData["SuccessMessage"] = "Cập nhật thông tin thành công!";
-
-                    // Cập nhật lại cookie xác thực với tên mới
-                    var claims = User.Claims.ToList();
-
-                    // Tìm và cập nhật claim Name
-                    var nameClaim = claims.FirstOrDefault(c => c.Type == ClaimTypes.Name);
-                    if (nameClaim != null)
-                    {
-                        claims.Remove(nameClaim);
-                        claims.Add(new Claim(ClaimTypes.Name, hocVien.HoTen));
-
-                        var identity = new ClaimsIdentity(claims, "Cookie");
-                        var principal = new ClaimsPrincipal(identity);
-
-                        await HttpContext.SignInAsync(
-                            "Cookies",
-                            principal,
-                            new AuthenticationProperties { IsPersistent = true });
-                    }
                 }
                 catch (Exception ex)
                 {
                     TempData["ErrorMessage"] = "Đã có lỗi " + ex.Message;
                 }
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Index", "HocViens");
             }
             return View(hocVien);
         }
@@ -155,11 +148,11 @@ namespace QuanLyTrungTamDaoTao.Areas.Admin.Controllers
                 }
 
                 //nếu đã đăng ký thì không thể xóa học viên
-                var daDangKy = _context.DangKyKhoaHocs.AnyAsync(dk => dk.MaHocVien == MaHocVien);
-                if(daDangKy != null)
+                var daDangKy = await _context.DangKyKhoaHocs.AnyAsync(dk => dk.MaHocVien == MaHocVien);
+                if(daDangKy)
                 {
                     TempData["ErrorMessage"] = "Học viên đã đăng ký học không thể xóa.";
-                    return View(MaHocVien);
+                    return RedirectToAction("Index", "HocViens");
                 }
 
                 var TaiKhoanHv = await _context.TaiKhoans.FirstOrDefaultAsync(tk => tk.MaNguoiDung == MaHocVien);

@@ -64,7 +64,7 @@
                             </div>
                             <div class="mb-3">
                                 <label asp-for="HocPhi" class="form-label">Học phí*</label>
-                                <input asp-for="HocPhi" class="form-control" type="number" min="0" step="0.01" />
+                                <input asp-for="HocPhi" class="form-control" type="number" min="0" step="1" />
                                 <span asp-validation-for="HocPhi" class="text-danger"></span>
                             </div>
                             <div class="mb-3">
@@ -78,9 +78,6 @@
                             </div>
                         </form>
                     </div>
-                </div>
-                <div class="mt-3">
-                    <a asp-action="Index" class="text-decoration-none"><i class="bi bi-arrow-left"></i> Quay lại danh sách</a>
                 </div>
             </div>
         </div>

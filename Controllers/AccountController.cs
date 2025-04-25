@@ -1,13 +1,14 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore; // Add EF Core for async operations
+using Microsoft.EntityFrameworkCore;
 using QuanLyTrungTamDaoTao.ViewModels;
 using QuanLyTrungTamDaoTao.Helper;
-using System.Linq; // Add Linq
+using System.Linq;
 using System.Threading.Tasks;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using QuanLyTrungTamDaoTao.Models; // Add Task for async
+using QuanLyTrungTamDaoTao.Models;
+using System.Text.RegularExpressions;
 
 namespace QuanLyTrungTamDaoTao.Controllers
 {
@@ -29,9 +30,19 @@ namespace QuanLyTrungTamDaoTao.Controllers
         [HttpPost]
         public async Task<IActionResult> DangKy(RegisterVM model)
         {
-            //Console.WriteLine(model.NgaySinh);
-            //Console.WriteLine(model.MatKhau);
-            //Console.WriteLine(model.HoTen);
+            if (User.Identity != null && User.Identity.IsAuthenticated)
+            {
+                if (User.IsInRole("HV"))
+                {
+                    TempData["ErrorMessage"] = "Bạn đã đăng nhập";
+                    return RedirectToAction("Index", "Home");
+                }
+                else if (User.IsInRole("QTV"))
+                {
+                    TempData["ErrorMessage"] = "Bạn đã đăng nhập";
+                    return RedirectToAction("Dashboard", "HomeAdmin", new { area = "Admin" });
+                }
+            }
             if (ModelState.IsValid)
             {
                try
@@ -49,6 +60,12 @@ namespace QuanLyTrungTamDaoTao.Controllers
                     if (_db.HocViens.Any(t => t.SoDienThoai == model.SoDienThoai) || _db.QuanTriViens.Any(t => t.SoDienThoai == model.SoDienThoai))
                     {
                         ModelState.AddModelError("SoDienThoai", "Số điện thoại này đã được sử dụng.");
+                        return View(model);
+                    }
+
+                    if (!Regex.IsMatch(model.SoDienThoai, "^(0?)(3[2-9]|5[6|8|9]|7[0|6-9]|8[0-6|8|9]|9[0-4|6-9])[0-9]{7}$"))
+                    {
+                        ModelState.AddModelError("SoDienThoai", "Số điện thoại này không hợp lệ.");
                         return View(model);
                     }
 
@@ -143,6 +160,19 @@ namespace QuanLyTrungTamDaoTao.Controllers
         [HttpPost]
         public async Task<IActionResult> DangNhap(LoginVM model)
         {
+            if(User.Identity != null && User.Identity.IsAuthenticated)
+            {
+                if(User.IsInRole("HV"))
+                {
+                    TempData["ErrorMessage"] = "Bạn đã đăng nhập";
+                    return RedirectToAction("Index", "Home");
+                }
+                else if (User.IsInRole("QTV"))
+                {
+                    TempData["ErrorMessage"] = "Bạn đã đăng nhập";
+                    return RedirectToAction("Dashboard", "HomeAdmin", new { area = "Admin" });
+                }
+            }
             if(!ModelState.IsValid)
             {
                 ModelState.Values.SelectMany(v => v.Errors).ToList().ForEach(error =>
@@ -164,8 +194,7 @@ namespace QuanLyTrungTamDaoTao.Controllers
                     ModelState.AddModelError("loi", "Sai mật khẩu");
                 }
                 else
-                {
-                    Console.WriteLine(user.VaiTro);
+                { 
                     List<Claim> claims = new List<Claim>();
                     if (user.VaiTro == "HV")
                     {

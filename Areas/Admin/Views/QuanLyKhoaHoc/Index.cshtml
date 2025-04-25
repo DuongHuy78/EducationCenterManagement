@@ -62,7 +62,7 @@
                     @foreach (var khoaHoc in Model)
                     {
                         Decimal DoanhThu = khoaHoc.SoLuongHocVienHienTai * khoaHoc.HocPhi;
-						var thoiGianKetThuc = khoaHoc.ThoiGianKetThuc?.ToString("dd-MM-yyyy") ?? "Chưa xác định";
+						var thoiGianKetThuc = khoaHoc.ThoiGianKetThuc?.ToString("dd/MM/yyyy") ?? "Chưa xác định";
                         <tr>
                             <td>@khoaHoc.MaKhoaHoc</td>
                             <td>@khoaHoc.TenKhoaHoc</td>

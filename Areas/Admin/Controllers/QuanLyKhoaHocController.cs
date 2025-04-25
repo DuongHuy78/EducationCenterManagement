@@ -11,7 +11,7 @@ using QuanLyTrungTamDaoTao.Models;
 namespace QuanLyTrungTamDaoTao.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Authorize(Roles = "QTV")]
+    [Authorize("Admin")]
     public class QuanLyKhoaHocController : Controller
     {
         private readonly QuanLyTrungTamDaoTaoContext _context;
@@ -85,20 +85,36 @@ namespace QuanLyTrungTamDaoTao.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreatePost([Bind("MaKhoaHoc,TenKhoaHoc,GiangVien,ThoiGianKhaiGiang,HocPhi,SoLuongHocVienToiDa")] KhoaHoc khoaHoc)
+        public async Task<IActionResult> CreatePost([Bind("MaKhoaHoc,TenKhoaHoc,GiangVien,ThoiGianKhaiGiang,ThoiGianKetThuc,HocPhi,SoLuongHocVienToiDa")] KhoaHoc khoaHoc)
         {
             if (ModelState.IsValid)
             {
-                if(khoaHoc.ThoiGianKetThuc <= khoaHoc.ThoiGianKhaiGiang)
+                if (khoaHoc.SoLuongHocVienToiDa <= 0)
                 {
+                    ViewBag.NewKhoaHocId = khoaHoc.MaKhoaHoc;
+                    TempData["ErrorMessage"] = "Số lượng tối đa không phù hợp.";
+                    return View("Create", khoaHoc);
+                }
+
+                if(khoaHoc.HocPhi <= 0)
+                {
+                    ViewBag.NewKhoaHocId = khoaHoc.MaKhoaHoc;
+                    TempData["ErrorMessage"] = "Học phí không phù hợp.";
+                    return View("Create", khoaHoc);
+                }
+
+                if (khoaHoc.ThoiGianKetThuc <= khoaHoc.ThoiGianKhaiGiang)
+                {
+                    ViewBag.NewKhoaHocId = khoaHoc.MaKhoaHoc;
                     TempData["ErrorMessage"] = "Thời gian khai giảng và kết thúc không phù hợp.";
-                    return View(khoaHoc);
+                    return View("Create", khoaHoc);
                 }
 
                 if(khoaHoc.ThoiGianKhaiGiang <= DateOnly.FromDateTime(DateTime.Now))
                 {
+                    ViewBag.NewKhoaHocId = khoaHoc.MaKhoaHoc;
                     TempData["ErrorMessage"] = "Thời gian khai giảng không phù hợp.";
-                    return View(khoaHoc);
+                    return View("Create", khoaHoc);
                 }
 
                 _context.Add(khoaHoc);
@@ -145,6 +161,24 @@ namespace QuanLyTrungTamDaoTao.Areas.Admin.Controllers
                     return View(khoaHoc);
                 }
 
+                if(currentKH.SoLuongHocVienHienTai > khoaHoc.SoLuongHocVienToiDa)
+                {
+                    TempData["ErrorMessage"] = "Số lượng tối đa không phù hợp.";
+                    return View(khoaHoc);
+                }
+
+                if(khoaHoc.SoLuongHocVienToiDa <= 0)
+                {
+                    TempData["ErrorMessage"] = "Số lượng tối đa không phù hợp.";
+                    return View(khoaHoc);
+                }
+
+                if(khoaHoc.HocPhi <= 0)
+                {
+                    TempData["ErrorMessage"] = "Số học phí không phù hợp.";
+                    return View(khoaHoc);
+                }
+
                 // chỉ cho phép đổi khi
                 // 1) cả sau khi đổi và trc khi đổi thời gian khai giảng đều > now
                 // 2) nếu sau khi đổi < now thì chỉ có 1 th là sau khi đổi = trc khi đổi
@@ -153,7 +187,13 @@ namespace QuanLyTrungTamDaoTao.Areas.Admin.Controllers
                 {
                     try
                     {
-                        _context.KhoaHocs.Update(khoaHoc);
+                        currentKH.TenKhoaHoc = khoaHoc.TenKhoaHoc;
+                        currentKH.GiangVien = khoaHoc.GiangVien;
+                        currentKH.ThoiGianKhaiGiang = khoaHoc.ThoiGianKhaiGiang;
+                        currentKH.ThoiGianKetThuc = khoaHoc.ThoiGianKetThuc;
+                        currentKH.HocPhi = khoaHoc.HocPhi;
+                        currentKH.SoLuongHocVienToiDa = khoaHoc.SoLuongHocVienToiDa;
+
                         await _context.SaveChangesAsync();
                         TempData["SuccessMessage"] = "Bạn đã chỉnh sửa thành công.";
                     }
@@ -161,6 +201,10 @@ namespace QuanLyTrungTamDaoTao.Areas.Admin.Controllers
                     {
                         TempData["ErrorMessage"] = "Đã có lỗi trong quá trình chỉnh sửa" + ex.Message;
                     }
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "Thời gian khai giảng và kết thúc không phù hợp.";
                 }
                 return RedirectToAction(nameof(Index));
             }

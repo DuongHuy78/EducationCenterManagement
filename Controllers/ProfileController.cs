@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using QuanLyTrungTamDaoTao.Models;
 using System.Security.Claims;
+using System.Text.RegularExpressions;
 
 namespace QuanLyTrungTamDaoTao.Controllers
 {
@@ -55,7 +56,7 @@ namespace QuanLyTrungTamDaoTao.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> ChinhSuaThonTinCaNhan([Bind("MaHocVien,HoTen,NgaySinh,SoDienThoai,Email")] HocVien hocVien)
+        public async Task<IActionResult> ChinhSuaThongTinCaNhan([Bind("MaHocVien,HoTen,NgaySinh,SoDienThoai,Email")] HocVien hocVien)
         {
             if (ModelState.IsValid)
             {
@@ -78,10 +79,23 @@ namespace QuanLyTrungTamDaoTao.Controllers
                     {
                         return NotFound();
                     }
+
                     if ((await _context.HocViens.AnyAsync(hv => hv.Email == hocVien.Email) && currentHV.Email != hocVien.Email)
                         || await _context.QuanTriViens.AnyAsync(qtv => qtv.Email == hocVien.Email))
                     {
-                        TempData["ErrorMessage"] = "Email đã bị trùng";
+                        TempData["ErrorMessage"] = "Email đã bị trùng.";
+                        return View(hocVien);
+                    }
+
+                    if (hocVien.SoDienThoai == null || hocVien.Email == null || hocVien.HoTen == null)
+                    {
+                        TempData["ErrorMessage"] = "Vui lòng nhập đầy đủ thông tin.";
+                        return View(hocVien);
+                    }
+
+                    if (!Regex.IsMatch(hocVien.SoDienThoai, "^(0?)(3[2-9]|5[6|8|9]|7[0|6-9]|8[0-6|8|9]|9[0-4|6-9])[0-9]{7}$"))
+                    {
+                        TempData["ErrorMessage"] = "Vui lòng nhập đúng định dạng số điện thoại.";
                         return View(hocVien);
                     }
 

@@ -19,7 +19,7 @@ public partial class KhoaHoc
 
     public int SoLuongHocVienToiDa { get; set; }
 
-    public int SoLuongHocVienHienTai { get; set; }
+    public int SoLuongHocVienHienTai { get; set; } = 0;
 
     public virtual ICollection<DangKyKhoaHoc> DangKyKhoaHocs { get; set; } = new List<DangKyKhoaHoc>();
 }
