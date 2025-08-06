@@ -14,4 +14,3 @@ The project provides a comprehensive solution for training center management. It
 - Programming Language: C#, Html, CSS
 - Framework: ASP.Net MVC
 - Database: SQL Server
-- Other Tools: (Please specify any additional libraries or tools if used)
